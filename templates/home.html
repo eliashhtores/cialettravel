@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cialet Travel Agency</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/tailwind.min.css' %}" />
+</head>
+<body class="bg-slate-100 text-slate-900">
+    <main class="max-w-6xl mx-auto px-4 py-10">
+        <section class="text-center mb-10">
+            <h1 class="text-4xl font-bold text-indigo-700">Cialet Travel Agency</h1>
+            <p class="mt-3 text-lg">Explore curated destinations and travel packages.</p>
+        </section>
+
+        <section class="mb-8">
+            <h2 class="text-2xl font-semibold mb-4">Top Destinations</h2>
+            <div class="grid md:grid-cols-3 gap-4">
+                {% for destination in destinations %}
+                    <article class="card">
+                        <h3 class="text-xl font-semibold">{{ destination.name }}</h3>
+                        <p class="text-sm text-slate-600">{{ destination.country }}</p>
+                        <p class="mt-2">{{ destination.description }}</p>
+                    </article>
+                {% empty %}
+                    <p class="text-slate-600">No destinations yet. Add one via the API.</p>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section>
+            <h2 class="text-2xl font-semibold mb-4">Popular Packages</h2>
+            <div class="grid md:grid-cols-3 gap-4">
+                {% for package in packages %}
+                    <article class="card">
+                        <h3 class="text-xl font-semibold">{{ package.title }}</h3>
+                        <p class="text-sm text-slate-600">{{ package.destination.name }} · {{ package.duration_days }} days</p>
+                        <p class="mt-2">{{ package.summary }}</p>
+                        <p class="mt-3 font-semibold text-indigo-700">${{ package.price }}</p>
+                    </article>
+                {% empty %}
+                    <p class="text-slate-600">No packages yet. Add one via the API.</p>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+</body>
+</html>
