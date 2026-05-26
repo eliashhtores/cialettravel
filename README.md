@@ -14,6 +14,7 @@ cp .env.example .env
 # In .env, set DJANGO_DEBUG=true (enables the dev-only SECRET_KEY fallback)
 export $(grep -v '^#' .env | xargs)
 pip install -r requirements.txt
+npm install && npm run build:css   # compile Tailwind CSS (requires Node ≥ 18)
 python manage.py migrate
 python manage.py runserver
 ```
