@@ -1,8 +1,8 @@
 # Build stage: compile Tailwind CSS
 FROM node:20-slim AS frontend
 WORKDIR /frontend
-COPY package.json ./
-RUN npm install
+COPY package.json package-lock.json ./
+RUN npm ci
 COPY tailwind.config.js ./
 COPY templates/ ./templates/
 COPY static/css/app.css ./static/css/app.css
@@ -14,7 +14,7 @@ WORKDIR /build
 RUN apt-get update && apt-get install -y --no-install-recommends libpq-dev gcc \
     && rm -rf /var/lib/apt/lists/*
 COPY requirements.txt .
-RUN pip install --no-cache-dir --user -r requirements.txt
+RUN python -m venv /venv && /venv/bin/pip install --no-cache-dir -r requirements.txt
 
 # Final stage
 FROM python:3.12-slim
@@ -24,8 +24,8 @@ WORKDIR /app
 # Runtime libpq shared library (required by psycopg2)
 RUN apt-get update && apt-get install -y --no-install-recommends libpq5 \
     && rm -rf /var/lib/apt/lists/*
-COPY --from=python-builder /root/.local /root/.local
-ENV PATH=/root/.local/bin:$PATH
+COPY --from=python-builder /venv /venv
+ENV PATH=/venv/bin:$PATH
 COPY . .
 COPY --from=frontend /frontend/static/css/tailwind.min.css static/css/tailwind.min.css
 RUN addgroup --system app && adduser --system --ingroup app app
