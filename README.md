@@ -10,6 +10,9 @@ Runnable full stack travel agency app with:
 ## Local run (without Docker)
 
 ```bash
+cp .env.example .env
+# In .env, set DJANGO_DEBUG=true (enables the dev-only SECRET_KEY fallback)
+export $(grep -v '^#' .env | xargs)
 pip install -r requirements.txt
 python manage.py migrate
 python manage.py runserver
@@ -25,7 +28,7 @@ App URLs:
 
 ```bash
 cp .env.example .env
-# Edit .env and set DJANGO_SECRET_KEY and other values
+# Edit .env: set DJANGO_SECRET_KEY to a real secret and DJANGO_DEBUG=false
 docker compose up --build
 ```
 
