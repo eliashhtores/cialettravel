@@ -2,10 +2,24 @@
 
 Runnable full stack travel agency app with:
 
-- **Backend**: Django + Django REST Framework
+- **Backend**: Django + Django REST Framework (API only — no template rendering)
 - **Data**: SQLite by default, PostgreSQL via environment variables / Docker Compose
-- **Frontend**: Static Tailwind-based landing page rendered by Django templates
+- **Frontend**: Static HTML5/CSS3/Vanilla JS under `frontend/` — fetches data from the REST API via XHR
 - **Local orchestration**: Docker Compose (`web` + `db`)
+
+## Project structure
+
+```
+frontend/
+  index.html          # landing page (served at / via Whitenoise)
+  css/
+    index.css         # component styles
+    tailwind.min.css  # compiled Tailwind output
+  js/
+    index.js          # XHR calls to /api/destinations/ and /api/packages/
+trips/                # Django app — models, serializers, API viewsets only
+cialettravel/         # Django project settings, URLs
+```
 
 ## Local run (without Docker)
 
