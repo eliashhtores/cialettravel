@@ -29,3 +29,11 @@ class TravelApiTests(TestCase):
         response = self.client.get("/")
         self.assertContains(response, "Cialet Travel Agency")
         self.assertContains(response, "Santorini Getaway")
+
+    def test_unauthenticated_write_is_rejected(self):
+        response = self.client.post(
+            "/api/destinations/",
+            {"name": "Hack", "country": "Exploit", "description": "..."},
+            format="json",
+        )
+        self.assertEqual(response.status_code, 403)
