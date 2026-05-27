@@ -25,10 +25,10 @@ class TravelApiTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()[0]["name"], "Santorini")
 
-    def test_homepage_renders(self):
-        response = self.client.get("/")
-        self.assertContains(response, "Cialet Travel Agency")
-        self.assertContains(response, "Santorini Getaway")
+    def test_package_list_api(self):
+        response = self.client.get("/api/packages/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()[0]["title"], "Santorini Getaway")
 
     def test_unauthenticated_write_is_rejected(self):
         response = self.client.post(

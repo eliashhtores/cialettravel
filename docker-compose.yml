@@ -1,37 +1,52 @@
 services:
-  db:
-    image: postgres:16-alpine
-    env_file:
-      - .env
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    db:
+        image: postgres:16-alpine
+        env_file:
+            - .env
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
 
-  migrate:
-    build: .
-    command: python manage.py migrate
-    env_file:
-      - .env
-    depends_on:
-      db:
-        condition: service_healthy
+    migrations:
+        build: .
+        command: sh -c "python manage.py migrate && python manage.py collectstatic --noinput"
+        env_file:
+            - .env
+        volumes:
+            - staticfiles:/app/staticfiles
+        depends_on:
+            db:
+                condition: service_healthy
 
-  web:
-    build: .
-    command: sh -c "python manage.py collectstatic --noinput && gunicorn --bind 0.0.0.0:8000 cialettravel.wsgi:application"
-    env_file:
-      - .env
-    ports:
-      - "8000:8000"
-    depends_on:
-      db:
-        condition: service_healthy
-      migrate:
-        condition: service_completed_successfully
+    web:
+        build: .
+        command: gunicorn --bind 0.0.0.0:8000 cialettravel.wsgi:application
+        env_file:
+            - .env
+        depends_on:
+            db:
+                condition: service_healthy
+            migrations:
+                condition: service_completed_successfully
+
+    nginx:
+        image: nginx:alpine
+        ports:
+            - "80:80"
+        volumes:
+            - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+            - ./frontend:/usr/share/nginx/frontend:ro
+            - staticfiles:/usr/share/nginx/staticfiles:ro
+        depends_on:
+            migrations:
+                condition: service_completed_successfully
+            web:
+                condition: service_started
 
 volumes:
-  postgres_data:
+    postgres_data:
+    staticfiles:
